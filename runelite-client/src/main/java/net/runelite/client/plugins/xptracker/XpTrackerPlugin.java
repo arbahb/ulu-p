@@ -37,22 +37,13 @@ import java.util.List;
 import java.util.Objects;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Actor;
-import net.runelite.api.Client;
-import net.runelite.api.Experience;
-import net.runelite.api.GameState;
-import net.runelite.api.NPC;
-import net.runelite.api.Player;
-import net.runelite.api.Skill;
-import net.runelite.api.VarPlayer;
-import net.runelite.api.WorldType;
-import net.runelite.api.events.ExperienceChanged;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.*;
+import net.runelite.api.events.*;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.events.AttackStyleChanged;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.game.SkillIconManager;
+import net.runelite.client.game.attackstyles.AttackStyle;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import static net.runelite.client.plugins.xptracker.XpWorldType.NORMAL;
@@ -100,8 +91,15 @@ public class XpTrackerPlugin extends Plugin
 	private long lastTickMillis = 0;
 
 	private final XpClient xpClient = new XpClient();
-	private final XpState xpState = new XpState();
+	private final XpState xpState = new XpState(this);
 	private final XpPauseState xpPauseState = new XpPauseState();
+
+	private AttackStyle attackStyle;
+
+	AttackStyle getAttackStyle()
+	{
+		return attackStyle;
+	}
 
 	@Provides
 	XpTrackerConfig provideConfig(ConfigManager configManager)
@@ -137,6 +135,12 @@ public class XpTrackerPlugin extends Plugin
 	{
 		xpState.reset();
 		clientToolbar.removeNavigation(navButton);
+	}
+
+	@Subscribe
+	public void onAttackStyleChanged(AttackStyleChanged event)
+	{
+		attackStyle = event.getAttackStyle();
 	}
 
 	@Subscribe

@@ -29,6 +29,7 @@ import java.util.Map;
 import lombok.NonNull;
 import net.runelite.api.NPC;
 import net.runelite.api.Skill;
+import net.runelite.client.game.attackstyles.AttackStyle;
 
 /**
  * Internal state for the XpTrackerPlugin
@@ -38,11 +39,16 @@ import net.runelite.api.Skill;
  */
 class XpState
 {
-	private static final double DEFAULT_XP_MODIFIER = 4.0;
-	private static final double SHARED_XP_MODIFIER = DEFAULT_XP_MODIFIER / 3.0;
 	private final XpStateTotal xpTotal = new XpStateTotal();
+	private final static double DEFAULT_XP_MODIFIER = 4.0;
 	private final Map<Skill, XpStateSingle> xpSkills = new EnumMap<>(Skill.class);
 	private NPC interactedNPC;
+	private XpTrackerPlugin pluginRef;
+
+	public XpState(XpTrackerPlugin pluginRef)
+	{
+		this.pluginRef = pluginRef;
+	}
 
 	/**
 	 * Destroys all internal state, however any XpSnapshotSingle or XpSnapshotTotal remain unaffected.
@@ -126,11 +132,17 @@ class XpState
 
 	private double getCombatXPModifier(Skill skill)
 	{
-		if (skill == Skill.HITPOINTS)
+		for (AttackStyle.SkillAmount skillAmount : pluginRef.getAttackStyle().getSkillAmounts())
 		{
-			return SHARED_XP_MODIFIER;
+			if (skill == skillAmount.getSkill())
+			{
+				return skillAmount.getAmount();
+			}
 		}
 
+		// if things are working correctly we shouldn't ever get here b/c the only xp drops that are processed
+		// to here will be for the combat skills that can be trained with the equipped weapon (which will have a
+		// corresponding SkillAmount)
 		return DEFAULT_XP_MODIFIER;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, honeyhoney <https://github.com/honeyhoney>
+ * Copyright (c) 2018, Davis Cook <daviscook447@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,38 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.attackstyles;
+package net.runelite.client.events;
 
-import net.runelite.api.Skill;
+import lombok.Value;
+import net.runelite.client.game.attackstyles.WeaponType;
 
-enum AttackStyle
+@Value
+public class EquippedWeaponChanged
 {
-	ACCURATE("Accurate", Skill.ATTACK),
-	AGGRESSIVE("Aggressive", Skill.STRENGTH),
-	DEFENSIVE("Defensive", Skill.DEFENCE),
-	CONTROLLED("Controlled", Skill.ATTACK, Skill.STRENGTH, Skill.DEFENCE),
-	RANGING("Ranging", Skill.RANGED),
-	LONGRANGE("Longrange", Skill.RANGED, Skill.DEFENCE),
-	CASTING("Casting", Skill.MAGIC),
-	DEFENSIVE_CASTING("Defensive Casting", Skill.MAGIC, Skill.DEFENCE),
-	OTHER("Other");
-
-	private final String name;
-	private final Skill[] skills;
-
-	AttackStyle(String name, Skill... skills)
-	{
-		this.name = name;
-		this.skills = skills;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-
-	public Skill[] getSkills()
-	{
-		return skills;
-	}
+	private final WeaponType equippedWeaponType;
 }

@@ -22,13 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.attackstyles;
+package net.runelite.client.game.attackstyles;
 
 import java.util.HashMap;
 import java.util.Map;
-import static net.runelite.client.plugins.attackstyles.AttackStyle.*;
+import static net.runelite.client.game.attackstyles.AttackStyle.*;
 
-enum WeaponType
+public enum WeaponType
 {
 	TYPE_0(ACCURATE, AGGRESSIVE, null, DEFENSIVE),
 	TYPE_1(ACCURATE, AGGRESSIVE, AGGRESSIVE, DEFENSIVE),
