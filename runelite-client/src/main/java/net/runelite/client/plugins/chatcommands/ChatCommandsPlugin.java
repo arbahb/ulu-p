@@ -85,13 +85,14 @@ public class ChatCommandsPlugin extends Plugin implements ChatboxInputListener
 	private static final Pattern RAIDS_PATTERN = Pattern.compile("Your completed (.+) count is: <col=ff0000>(\\d+)</col>.");
 	private static final Pattern WINTERTODT_PATTERN = Pattern.compile("Your subdued Wintertodt count is: <col=ff0000>(\\d+)</col>.");
 	private static final Pattern BARROWS_PATTERN = Pattern.compile("Your Barrows chest count is: <col=ff0000>(\\d+)</col>.");
-	private static final String TOTAL_LEVEL_COMMAND_STRING = "!total";
-	private static final String PRICE_COMMAND_STRING = "!price";
-	private static final String LEVEL_COMMAND_STRING = "!lvl";
-	private static final String CLUES_COMMAND_STRING = "!clues";
-	private static final String KILLCOUNT_COMMAND_STRING = "!kc";
-	private static final String CMB_COMMAND_STRING = "!cmb";
-
+	private static final Pattern COMMAND_PATTERN = Pattern.compile("^[!.]" +
+																			"((?<lvl>Lvl|Level)|" +
+																			"(?<ge>Ge|Price|Value)|" +
+																			"(?<cmb>Cmb|Combat|Cbt)|" +
+																			"(?<total>Total|Overall|Totallvl|Totallevel)|" +
+																			"(?<clues>Clues|Clue)|" +
+																			"(?<kc>Kc|Kills|Killcount))" +
+																			" ?(?<txt>.+)?", Pattern.CASE_INSENSITIVE);
 	private final HiscoreClient hiscoreClient = new HiscoreClient();
 	private final KillCountClient killCountClient = new KillCountClient();
 
@@ -183,6 +184,7 @@ public class ChatCommandsPlugin extends Plugin implements ChatboxInputListener
 		}
 
 		String message = setMessage.getValue();
+		Matcher matcher = COMMAND_PATTERN.matcher(message);
 		MessageNode messageNode = setMessage.getMessageNode();
 		HiscoreEndpoint localEndpoint = getHiscoreEndpointType();
 
@@ -190,45 +192,50 @@ public class ChatCommandsPlugin extends Plugin implements ChatboxInputListener
 		// being reused
 		messageNode.setRuneLiteFormatMessage(null);
 
-		if (config.lvl() && message.toLowerCase().equals(TOTAL_LEVEL_COMMAND_STRING))
+		if (!matcher.matches())
+		{
+			return;
+		}
+
+		if (config.lvl() && matcher.group("total") != null)
 		{
 			log.debug("Running total level lookup");
 			executor.submit(() -> playerSkillLookup(setMessage, localEndpoint, "total"));
 		}
-		else if (config.lvl() && message.toLowerCase().equals(CMB_COMMAND_STRING))
+		else if (config.lvl() && matcher.group("cmb") != null)
 		{
 			log.debug("Running combat level lookup");
 			executor.submit(() -> combatLevelLookup(setMessage.getType(), setMessage));
 		}
-		else if (config.price() && message.toLowerCase().startsWith(PRICE_COMMAND_STRING + " "))
+		else if (config.price() && matcher.group("ge") != null)
 		{
-			String search = message.substring(PRICE_COMMAND_STRING.length() + 1);
+			String search = matcher.group("txt");
 
 			log.debug("Running price lookup for {}", search);
 			itemPriceLookup(setMessage.getMessageNode(), search);
 		}
-		else if (config.lvl() && message.toLowerCase().startsWith(LEVEL_COMMAND_STRING + " "))
+		else if (config.lvl() && matcher.group("lvl") != null)
 		{
-			String search = message.substring(LEVEL_COMMAND_STRING.length() + 1);
+			String search = matcher.group("txt");
 
 			log.debug("Running level lookup for {}", search);
 			executor.submit(() -> playerSkillLookup(setMessage, localEndpoint, search));
 		}
-		else if (config.clue() && message.toLowerCase().equals(CLUES_COMMAND_STRING))
+		else if (config.clue() && matcher.group("clues") != null && matcher.group("txt") == null)
 		{
 			log.debug("Running lookup for overall clues");
 			executor.submit(() -> playerClueLookup(setMessage, localEndpoint,  "total"));
 		}
-		else if (config.clue() && message.toLowerCase().startsWith(CLUES_COMMAND_STRING + " "))
+		else if (config.clue() && matcher.group("clues") != null)
 		{
-			String search = message.substring(CLUES_COMMAND_STRING.length() + 1);
+			String search = matcher.group("txt");
 
 			log.debug("Running clue lookup for {}", search);
 			executor.submit(() -> playerClueLookup(setMessage, localEndpoint, search));
 		}
-		else if (config.killcount() && message.toLowerCase().startsWith(KILLCOUNT_COMMAND_STRING + " "))
+		else if (config.killcount() && matcher.group("kc") != null)
 		{
-			String search = message.substring(KILLCOUNT_COMMAND_STRING.length() + 1);
+			String search = matcher.group("txt");
 
 			log.debug("Running killcount lookup for {}", search);
 			executor.submit(() -> killCountLookup(setMessage.getType(), setMessage, search));
