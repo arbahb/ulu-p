@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
+import net.runelite.api.Varbits;
 
 @Singleton
 public class PlayerIndicatorsService
@@ -44,10 +45,15 @@ public class PlayerIndicatorsService
 		this.client = client;
 	}
 
+	private boolean inPvp()
+	{
+		return client.getVar(Varbits.PVP_SPEC_ORB) == 1;
+	}
+
 	public void forEachPlayer(final BiConsumer<Player, Color> consumer)
 	{
 		if (!config.highlightOwnPlayer() && !config.drawClanMemberNames()
-			&& !config.highlightFriends() && !config.highlightNonClanMembers())
+			&& !config.highlightFriends() && !config.highlightNonClanMembers() && !config.highlightPvpPlayers())
 		{
 			return;
 		}
@@ -81,6 +87,10 @@ public class PlayerIndicatorsService
 			else if (config.highlightTeamMembers() && localPlayer.getTeam() > 0 && localPlayer.getTeam() == player.getTeam())
 			{
 				consumer.accept(player, config.getTeamMemberColor());
+			}
+			else if (config.highlightPvpPlayers() && inPvp())
+			{
+				consumer.accept(player, config.getPvpPlayerColor());
 			}
 			else if (config.highlightNonClanMembers() && !isClanMember)
 			{

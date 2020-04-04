@@ -144,6 +144,29 @@ public interface PlayerIndicatorsConfig extends Config
 
 	@ConfigItem(
 		position = 10,
+		keyName = "drawPvpNames",
+		name = "Highlight PvP players",
+		description = "Configures whether or not players should be highlighted in PvP"
+	)
+
+	default boolean highlightPvpPlayers()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 11,
+		keyName = "pvpPlayerColor",
+		name = "PvP player color",
+		description = "Color of player names in PvP areas"
+	)
+	default Color getPvpPlayerColor()
+	{
+		return Color.DARK_GRAY;
+	}
+
+	@ConfigItem(
+		position = 12,
 		keyName = "drawPlayerTiles",
 		name = "Draw tiles under players",
 		description = "Configures whether or not tiles under highlighted players should be drawn"
@@ -154,7 +177,7 @@ public interface PlayerIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 11,
+		position = 13,
 		keyName = "playerNamePosition",
 		name = "Name position",
 		description = "Configures the position of drawn player names, or if they should be disabled"
@@ -165,7 +188,7 @@ public interface PlayerIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 12,
+		position = 14,
 		keyName = "drawMinimapNames",
 		name = "Draw names on minimap",
 		description = "Configures whether or not minimap names for players with rendered names should be drawn"
@@ -176,7 +199,7 @@ public interface PlayerIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 13,
+		position = 15,
 		keyName = "colorPlayerMenu",
 		name = "Colorize player menu",
 		description = "Color right click menu for players"
@@ -187,7 +210,7 @@ public interface PlayerIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 14,
+		position = 16,
 		keyName = "clanMenuIcons",
 		name = "Show clan ranks",
 		description = "Add clan rank to right click menu and next to player names"
