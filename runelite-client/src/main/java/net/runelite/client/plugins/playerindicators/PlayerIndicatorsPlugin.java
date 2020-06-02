@@ -42,6 +42,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
+import net.runelite.api.Varbits;
 
 @PluginDescriptor(
 	name = "Player Indicators",
@@ -169,6 +170,11 @@ public class PlayerIndicatorsPlugin extends Plugin
 		}
 	}
 
+	private boolean inPvp()
+	{
+		return client.getVar(Varbits.PVP_SPEC_ORB) == 1;
+	}
+
 	private Decorations getDecorations(Player player)
 	{
 		int image = -1;
@@ -192,6 +198,10 @@ public class PlayerIndicatorsPlugin extends Plugin
 			&& player.getTeam() > 0 && client.getLocalPlayer().getTeam() == player.getTeam())
 		{
 			color = config.getTeamMemberColor();
+		}
+		else if (config.highlightPvpPlayers() && inPvp())
+		{
+			color = config.getPvpPlayerColor();
 		}
 		else if (config.highlightNonClanMembers() && !player.isClanMember())
 		{
