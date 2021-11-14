@@ -62,6 +62,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
 import net.runelite.api.ItemComposition;
+import net.runelite.api.ItemID;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.ScriptID;
@@ -194,6 +195,8 @@ public class GrandExchangePlugin extends Plugin
 	private String machineUuid;
 	private String lastUsername;
 	private int tradeSeq;
+	
+	private int defaultGeTextLineHeight = -1;
 
 	/**
 	 * Logic from {@link org.apache.commons.text.similarity.FuzzyScore}
@@ -850,8 +853,14 @@ public class GrandExchangePlugin extends Plugin
 			return;
 		}
 
+		if (defaultGeTextLineHeight == -1) {
+			defaultGeTextLineHeight = geText.getLineHeight();
+		}
+		
+		geText.setLineHeight(defaultGeTextLineHeight);
+		
 		String text = geText.getText();
-
+		
 		if (config.enableGELimits())
 		{
 			final ItemStats itemStats = itemManager.getItemStats(itemId, false);
@@ -879,6 +888,21 @@ public class GrandExchangePlugin extends Plugin
 			if (price > 0)
 			{
 				text += "<br>Actively traded price: " + QuantityFormatter.formatNumber(price);
+			}
+		}
+		
+		if (config.showHighAlchValue())
+		{
+			final int highAlchValue = client.getItemDefinition(itemId).getHaPrice();
+			final int profit = highAlchValue - (itemManager.getItemPriceWithSource(itemId, true) + itemManager.getItemPriceWithSource(ItemID.NATURE_RUNE, true));
+			if (highAlchValue > 0)
+			{
+				text += "<br>High alch value: " + QuantityFormatter.formatNumber(highAlchValue) + " (" + (profit > 0 ? "+" : "") + QuantityFormatter.formatNumber(profit) + ")";
+				
+				//If examine text takes 2 lines then decrese lineHeight by two so the high alch text will fit
+				if (geText.getText().length() > 55) {
+					geText.setLineHeight(defaultGeTextLineHeight - 2);
+				}
 			}
 		}
 
