@@ -51,6 +51,8 @@ import net.runelite.api.MenuAction;
 import static net.runelite.api.MenuAction.MENU_ACTION_DEPRIORITIZE_OFFSET;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
+import net.runelite.api.AnimationID;
+import net.runelite.api.NpcID;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -253,12 +255,13 @@ public class NpcIndicatorsPlugin extends Plugin
 			NPC npc = client.getCachedNPCs()[event.getIdentifier()];
 
 			Color color = null;
-			if (npc.isDead())
+			if (isActuallyDead(npc))
 			{
 				color = config.deadNpcMenuColor();
 			}
 
-			if (color == null && highlightedNpcs.containsKey(npc) && config.highlightMenuNames() && (!npc.isDead() || !config.ignoreDeadNpcs()))
+			if (color == null && highlightedNpcs.containsKey(npc) && config.highlightMenuNames()
+					&& (!isActuallyDead(npc) || !config.ignoreDeadNpcs()))
 			{
 				color = config.highlightColor();
 			}
@@ -680,7 +683,85 @@ public class NpcIndicatorsPlugin extends Plugin
 			.nameOnMinimap(config.drawMinimapNames())
 			.borderWidth((float) config.borderWidth())
 			.outlineFeather(config.outlineFeather())
-			.render(n -> !n.isDead() || !config.ignoreDeadNpcs())
+			.render(n -> !isActuallyDead(n) || !config.ignoreDeadNpcs())
 			.build();
+	}
+
+	/**
+	 * Checks whether an NPC is actually dead. Some NPCs can die above 0 HP and do not die normally
+	 * at 0 HP due to their death requiring the use of an item.
+	 *
+	 * @param npc the npc we are interested in
+	 * @return boolean indicating whether the npc is actually dead
+	 */
+	private boolean isActuallyDead(NPC npc)
+	{
+		boolean result;
+		if (npc.isDead())
+		{
+			result = !npcRequiresItemToKill(npc) || isDeathAnimation(npc);
+		}
+		else
+		{
+			result = npcRequiresItemToKill(npc) && isDeathAnimation(npc);
+		}
+		return result;
+	}
+
+	/**
+	 * Checking if current animation being performed by the given NPC is a death animation.
+	 *
+	 * @param npc the npc we are interested in
+	 * @return boolean indicating if the current animation is a death animation
+	 */
+	private boolean isDeathAnimation(NPC npc)
+	{
+		boolean result = false;
+		final int animation = npc.getAnimation();
+		if ((animation == AnimationID.DEATH)
+				|| (animation == AnimationID.GARGOYLE_DEATH)
+				|| (animation == AnimationID.MARBLE_GARGOYLE_DEATH)
+				|| (animation == AnimationID.LIZARD_DEATH)
+				|| (animation == AnimationID.ROCKSLUG_DEATH)
+				|| (animation == AnimationID.ZYGOMITE_DEATH))
+		{
+			result = true;
+		}
+		return result;
+	}
+
+	/**
+	 * Checking if NPC is in the list of NPCs that can only be killed after using an item on them.
+	 *
+	 * @param npc the npc we are interested in
+	 * @return boolean indicating if the npc can only be killed after using an item
+	 */
+	private boolean npcRequiresItemToKill(NPC npc)
+	{
+		boolean result = false;
+		final int type = npc.getId();
+		if ((type == NpcID.GARGOYLE)
+				|| (type == NpcID.GARGOYLE_413)
+				|| (type == NpcID.GARGOYLE_1543)
+				|| (type == NpcID.MARBLE_GARGOYLE)
+				|| (type == NpcID.MARBLE_GARGOYLE_7408)
+				|| (type == NpcID.DUSK_7888)
+				|| (type == NpcID.DUSK_7889)
+				|| (type == NpcID.ROCKSLUG)
+				|| (type == NpcID.ROCKSLUG_422)
+				|| (type == NpcID.GIANT_ROCKSLUG)
+				|| (type == NpcID.SMALL_LIZARD)
+				|| (type == NpcID.SMALL_LIZARD_463)
+				|| (type == NpcID.DESERT_LIZARD)
+				|| (type == NpcID.DESERT_LIZARD_460)
+				|| (type == NpcID.DESERT_LIZARD_461)
+				|| (type == NpcID.LIZARD)
+				|| (type == NpcID.ZYGOMITE)
+				|| (type == NpcID.ZYGOMITE_1024)
+				|| (type == NpcID.ANCIENT_ZYGOMITE))
+		{
+			result = true;
+		}
+		return result;
 	}
 }
