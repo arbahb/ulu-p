@@ -52,8 +52,8 @@ import net.runelite.client.hiscore.HiscoreEndpoint;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import static net.runelite.client.plugins.hiscore.Post99Display.SHOW_99;
-import static net.runelite.client.plugins.hiscore.Post99Display.VIRTUAL_LEVELS;
+import static net.runelite.client.plugins.hiscore.MaxedSkillsStyle.SHOW_99;
+import static net.runelite.client.plugins.hiscore.MaxedSkillsStyle.VIRTUAL_LEVELS;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
@@ -68,7 +68,7 @@ import net.runelite.client.util.Text;
 public class HiscorePlugin extends Plugin
 {
 	static final String CONFIG_GROUP = "hiscore";
-	static final String CONFIG_KEY_POST_99_DISPLAY = "post99SkillDisplayStyle";
+	static final String CONFIG_KEY_MAXED_SKILLS_STYLE = "post99SkillDisplayStyle";
 	static final String PREVIOUS_CONFIG_KEY_VIRTUAL_LEVEL = "virtualLevels";
 
 	private static final String LOOKUP = "Lookup";
@@ -126,6 +126,11 @@ public class HiscorePlugin extends Plugin
 		}
 	}
 
+	/**
+	 * In a previous version of this plugin, it only had the option to show "99" or virtual levels. This was a boolean,
+	 * so it has to be converted to an enum.
+	 */
+	@Deprecated
 	private void migrateVirtualLevelsDisplayConfig()
 	{
 		Boolean displayVirtualLevels = configManager.getConfiguration(
@@ -134,7 +139,7 @@ public class HiscorePlugin extends Plugin
 		if (displayVirtualLevels != null)
 		{
 			configManager.setConfiguration(
-				CONFIG_GROUP, CONFIG_KEY_POST_99_DISPLAY,
+				CONFIG_GROUP, CONFIG_KEY_MAXED_SKILLS_STYLE,
 				displayVirtualLevels ? VIRTUAL_LEVELS : SHOW_99
 			);
 			configManager.unsetConfiguration(CONFIG_GROUP, PREVIOUS_CONFIG_KEY_VIRTUAL_LEVEL);
