@@ -89,7 +89,7 @@ public class FontManager
 			throw new RuntimeException("Font file not found.", ex);
 		}
 
-		defaultFont = new Font(Font.DIALOG, Font.PLAIN, 16);
-		defaultBoldFont = new Font(Font.DIALOG, Font.BOLD, 16);
+		defaultFont = new Font(Font.DIALOG, Font.PLAIN, 12);
+		defaultBoldFont = new Font(Font.DIALOG, Font.BOLD, 12);
 	}
 }
