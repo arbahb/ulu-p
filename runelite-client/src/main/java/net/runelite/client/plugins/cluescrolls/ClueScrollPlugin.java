@@ -192,9 +192,6 @@ public class ClueScrollPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	@Inject
-	private ChatboxPanelManager chatboxPanelManager;
-
-	@Inject
 	private ClueScrollOverlay clueScrollOverlay;
 
 	@Inject
