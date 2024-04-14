@@ -60,12 +60,12 @@ class GroundItem
 	boolean hidden;
 	Color color;
 
-	int getHaPrice()
+	int getStackHaPrice()
 	{
 		return haPrice * quantity;
 	}
 
-	int getGePrice()
+	int getStackGePrice()
 	{
 		return gePrice * quantity;
 	}
