@@ -149,7 +149,7 @@ public class LootTrackerPlugin extends Plugin
 
 	//Zombie Pirate Locker loot handling
 	private static final String ZOMBIE_PIRATE_LOCKER_EVENT = "Zombie Pirate's Locker";
-	private static final Pattern ZOMBIE_PIRATE_LOCKER_PATTERN = Pattern.compile("You loot the locker and receive <.+>(\\d+)?,?(\\d*) x (.*)<.+");
+	private static final Pattern ZOMBIE_PIRATE_LOCKER_PATTERN = Pattern.compile("You loot the locker and receive <.+>(\\d+),?(\\d*) x (.*)<.+");
 
 	// Seed Pack loot handling
 	private static final String SEEDPACK_EVENT = "Seed pack";
