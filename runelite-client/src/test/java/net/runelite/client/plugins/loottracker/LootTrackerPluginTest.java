@@ -207,7 +207,7 @@ public class LootTrackerPluginTest
 	@Test
 	public void testZombiePirateLockerLoot()
 	{
-		for (Map.Entry<Integer,String> loot: ZOMBIE_PIRATE_LOCKER_IDS_TO_NAMES.entrySet())
+		for (Map.Entry<Integer, String> loot: ZOMBIE_PIRATE_LOCKER_IDS_TO_NAMES.entrySet())
 		{
 			final int id = loot.getKey();
 			final String name = loot.getValue();
@@ -219,10 +219,10 @@ public class LootTrackerPluginTest
 			for (int quantity = 1; quantity <= 120; quantity++)
 			{
 				final String lockerMessage = String.format("You loot the locker and receive <col=ef1020>%d x %s</col>.", quantity, name);
-				ChatMessage chatMessage_loot = new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "",lockerMessage, "", 0);
+				ChatMessage chatMessage_loot = new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "", lockerMessage, "", 0);
 				lootTrackerPlugin.onChatMessage(chatMessage_loot);
-				verify(lootTrackerPlugin).addLoot("Zombie Pirate's Locker",-1, LootRecordType.EVENT, null, Arrays.asList(
-						new ItemStack(id,quantity,null)
+				verify(lootTrackerPlugin).addLoot("Zombie Pirate's Locker", -1, LootRecordType.EVENT, null, Arrays.asList(
+						new ItemStack(id, quantity, null)
 				));
 			}
 		}
@@ -231,13 +231,13 @@ public class LootTrackerPluginTest
 		coinsPrice.setId(ItemID.COINS);
 		coinsPrice.setName("Coins");
 		when(itemManager.search("Coins")).thenReturn(Collections.singletonList(coinsPrice));
-		for (int coinQuantity = 1; coinQuantity <= 16001; coinQuantity+=1000)
+		for (int coinQuantity = 1; coinQuantity <= 16001; coinQuantity += 1000)
 		{
 			final String coinLockerMessage = String.format("You loot the locker and receive <col=ef1020>%,d x Coins</col>.", coinQuantity);
-			ChatMessage chatMessage_coinLoot = new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "",coinLockerMessage, "", 0);
+			ChatMessage chatMessage_coinLoot = new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "", coinLockerMessage, "", 0);
 			lootTrackerPlugin.onChatMessage(chatMessage_coinLoot);
-			verify(lootTrackerPlugin).addLoot("Zombie Pirate's Locker",-1, LootRecordType.EVENT, null, Arrays.asList(
-					new ItemStack(ItemID.COINS,coinQuantity,null)
+			verify(lootTrackerPlugin).addLoot("Zombie Pirate's Locker", -1, LootRecordType.EVENT, null, Arrays.asList(
+					new ItemStack(ItemID.COINS, coinQuantity, null)
 			));
 		}
 	}
