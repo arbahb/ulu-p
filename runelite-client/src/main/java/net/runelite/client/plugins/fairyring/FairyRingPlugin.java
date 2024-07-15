@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -65,6 +66,7 @@ import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.game.chatbox.ChatboxTextInput;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import static net.runelite.client.plugins.banktags.BankTagsPlugin.CONFIG_GROUP;
 import net.runelite.client.util.Text;
 
 @Slf4j
@@ -75,6 +77,7 @@ import net.runelite.client.util.Text;
 )
 public class FairyRingPlugin extends Plugin
 {
+	public static final String CONFIG_GROUP = "fairyrings";
 	public static final String CONFIG_GROUP_TAGS = "fairyringtags";
 	private static final String[] leftDial = {"A", "D", "C", "B"};
 	private static final String[] middleDial = {"I", "L", "K", "J"};
@@ -128,13 +131,17 @@ public class FairyRingPlugin extends Plugin
 	@Override
 	public void resetConfiguration()
 	{
-		List<String> keys = configManager.getConfigurationKeys(CONFIG_GROUP_TAGS);
-		for (String key : keys)
+		List<String> extraKeys = configManager.getConfigurationKeys(CONFIG_GROUP + "." + CONFIG_GROUP_TAGS);
+		for (String prefix : extraKeys)
 		{
-			String[] str = key.split("\\.", 2);
-			if (str.length == 2)
+			List<String> keys = configManager.getConfigurationKeys(prefix);
+			for (String key : keys)
 			{
-				configManager.unsetConfiguration(str[0], str[1]);
+				String[] str = key.split("\\.", 2);
+				if (str.length == 2)
+				{
+					configManager.unsetConfiguration(str[0], str[1]);
+				}
 			}
 		}
 	}
@@ -253,6 +260,8 @@ public class FairyRingPlugin extends Plugin
 		final Widget list = client.getWidget(ComponentID.FAIRY_RING_PANEL_LIST);
 		final Widget favorites = client.getWidget(ComponentID.FAIRY_RING_PANEL_FAVORITES);
 
+		boolean hasFavoites = false;
+		boolean hasNormal = false;
 		if (list == null)
 		{
 			return;
@@ -401,8 +410,18 @@ public class FairyRingPlugin extends Plugin
 
 				if (c.getFavorite() != null && c.getFavorite().getSpriteId() == SpriteID.FAIRY_RING_REMOVE_FAVOURITE)
 				{
-					separator.setHidden(false);
+					hasFavoites = true;
 					lastFavorite = c;
+				}
+				else
+				{
+					hasNormal = true;
+				}
+
+				// if we have both favorites and standard items in the search results, show the separator
+				if (hasFavoites && hasNormal)
+				{
+					separator.setHidden(false);
 				}
 			}
 			else if (c.getFavorite() != null && c.getFavorite().getSpriteId() == SpriteID.FAIRY_RING_REMOVE_FAVOURITE)
@@ -463,29 +482,19 @@ public class FairyRingPlugin extends Plugin
 
 	Collection<String> getTags(String fairyRingCode)
 	{
-		return new LinkedHashSet<>(Text.fromCSV(getTagString(fairyRingCode).toLowerCase()));
-	}
-
-	String getTagString(String fairyRingCode)
-	{
-		String config = configManager.getConfiguration(CONFIG_GROUP_TAGS, fairyRingCode);
-		if (config == null)
-		{
-			return "";
-		}
-
-		return config;
+		String config = Optional.ofNullable(configManager.getConfiguration(CONFIG_GROUP + "." + CONFIG_GROUP_TAGS, fairyRingCode)).orElse("").toLowerCase();
+		return new LinkedHashSet<>(Text.fromCSV(config));
 	}
 
 	void setTagString(String fairyRingCode, String tags)
 	{
 		if (Strings.isNullOrEmpty(tags))
 		{
-			configManager.unsetConfiguration(CONFIG_GROUP_TAGS, fairyRingCode);
+			configManager.unsetConfiguration(CONFIG_GROUP + "." + CONFIG_GROUP_TAGS, fairyRingCode);
 		}
 		else
 		{
-			configManager.setConfiguration(CONFIG_GROUP_TAGS, fairyRingCode, tags);
+			configManager.setConfiguration(CONFIG_GROUP + "." + CONFIG_GROUP_TAGS, fairyRingCode, tags);
 		}
 	}
 

@@ -462,6 +462,6 @@ public final class ScriptID
 	@ScriptArguments(integer = 2)
 	public static final int MOTHERLODE_HUD_UPDATE = 1634;
 
-	@ScriptArguments(integer = 1)
+	@ScriptArguments(integer = 5)
 	public static final int FAIRYRINGS_SORT_UPDATE = 402;
 }
