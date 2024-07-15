@@ -66,7 +66,6 @@ import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.game.chatbox.ChatboxTextInput;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import static net.runelite.client.plugins.banktags.BankTagsPlugin.CONFIG_GROUP;
 import net.runelite.client.util.Text;
 
 @Slf4j
@@ -229,7 +228,7 @@ public class FairyRingPlugin extends Plugin
 		searchBtn.setAction(1, MENU_CLOSE);
 		searchBtn.setOnOpListener((JavaScriptCallback) this::menuClose);
 		searchInput = chatboxPanelManager.openTextInput("Filter fairy rings")
-			.onChanged(s -> clientThread.invokeLater(() -> updateFilter(s.toLowerCase())))
+			.onChanged(s -> clientThread.invokeLater(() -> updateFilter(s)))
 			.onDone(s -> false)
 			.onClose(() ->
 			{
@@ -255,8 +254,9 @@ public class FairyRingPlugin extends Plugin
 		}
 	}
 
-	private void updateFilter(final String filter)
+	private void updateFilter(String f)
 	{
+		final String filter = f.toLowerCase();
 		final Widget list = client.getWidget(ComponentID.FAIRY_RING_PANEL_LIST);
 		final Widget favorites = client.getWidget(ComponentID.FAIRY_RING_PANEL_FAVORITES);
 
@@ -476,7 +476,7 @@ public class FairyRingPlugin extends Plugin
 	{
 		if (event.getScriptId() == ScriptID.FAIRYRINGS_SORT_UPDATE && searchInput != null && tagInput == null)
 		{
-			clientThread.invokeLater(() -> updateFilter(searchInput.getValue().toLowerCase()));
+			clientThread.invokeLater(() -> updateFilter(searchInput.getValue()));
 		}
 	}
 
