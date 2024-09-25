@@ -545,7 +545,6 @@ enum ItemIdentification
 	JUG_OF_SUNFIRE_WINE(Type.WINES, "Sunfire", "S", ItemID.JUG_OF_SUNFIRE_WINE),
 	JUG_OF_BLESSED_SUNFIRE_WINE(Type.WINES, "B. Sun", "BS", ItemID.JUG_OF_BLESSED_SUNFIRE_WINE);
 
-
 	final Type type;
 	final String medName;
 	final String shortName;
